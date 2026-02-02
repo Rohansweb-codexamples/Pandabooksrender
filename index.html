@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panda Planet Books | Official Site</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .panda-gradient { background: linear-gradient(135deg, #1a1c1e 0%, #000000 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .hidden-section { display: none !important; }
+        .modal-overlay { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); }
+        .utility-bar { background: #0f172a; color: rgba(255,255,255,0.7); font-size: 0.75rem; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Top Utility Bar -->
+    <div class="utility-bar py-2 px-4 sm:px-8 flex justify-between items-center z-[60] relative">
+        <div class="flex items-center gap-4">
+            <span><i class="fas fa-server text-emerald-400 mr-1"></i> Live Render Backend</span>
+        </div>
+        <div id="auth-controls" class="flex items-center gap-4">
+            <div id="top-auth-state">
+                <button onclick="openLoginModal('admin')" class="hover:text-white transition-colors mr-4">Admin Portal</button>
+                <button onclick="openLoginModal('user')" class="hover:text-white transition-colors">Sign In / Register</button>
+            </div>
+            <div id="top-user-state" class="hidden flex items-center gap-3">
+                <span id="welcome-text" class="text-emerald-400 font-medium"></span>
+                <button onclick="logout()" class="hover:text-red-400 transition-colors">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between h-20 items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('home')">
+                <div class="bg-slate-900 text-white p-2.5 rounded-xl">
+                    <i class="fas fa-panda fa-xl text-emerald-400"></i>
+                </div>
+                <div class="font-black">PANDA PLANET</div>
+            </div>
+
+            <div class="hidden md:flex space-x-8 font-medium items-center">
+                <button onclick="navigateTo('home')" class="hover:text-emerald-500">Home</button>
+                <button onclick="navigateTo('shop')" class="hover:text-emerald-500">Shop</button>
+                <div id="dashboard-btn-container" class="hidden">
+                    <button onclick="navigateTo('admin')" class="bg-emerald-500 text-white px-5 py-2 rounded-xl text-sm font-bold">Admin Dashboard</button>
+                </div>
+                <button class="relative text-slate-700" onclick="openCart()">
+                    <i class="fas fa-shopping-cart text-lg"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div id="login-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl relative">
+            <button onclick="closeLoginModal()" class="absolute top-8 right-8 text-slate-300">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            
+            <h2 id="modal-title" class="text-2xl font-black mb-2">Sign In</h2>
+            <p id="modal-desc" class="text-slate-500 text-sm mb-6">Enter your details below</p>
+
+            <form id="auth-form" class="space-y-4">
+                <div id="name-field" class="hidden">
+                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Full Name</label>
+                    <input type="text" id="auth-name" class="w-full px-5 py-3 rounded-xl border border-slate-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Email</label>
+                    <input type="email" id="auth-email" required class="w-full px-5 py-3 rounded-xl border border-slate-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Password</label>
+                    <input type="password" id="auth-password" required class="w-full px-5 py-3 rounded-xl border border-slate-200 outline-none">
+                </div>
+                <button type="submit" id="auth-submit-btn" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-emerald-600 transition-all">
+                    Sign In
+                </button>
+            </form>
+
+            <div id="auth-toggle" class="mt-6 text-center text-sm text-slate-500">
+                Don't have an account? <button onclick="toggleAuthMode()" class="text-emerald-600 font-bold hover:underline">Register Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <section id="page-home" class="page-section">
+            <div class="panda-gradient py-32 px-4 text-center text-white">
+                <h1 class="text-6xl font-black mb-6">Activity & Writer Books</h1>
+                <p class="text-slate-400 text-xl mb-10">Synced across the web via Render.</p>
+                <button onclick="navigateTo('shop')" class="bg-emerald-500 px-10 py-5 rounded-2xl font-black shadow-lg">Start Shopping</button>
+            </div>
+        </section>
+
+        <section id="page-shop" class="page-section hidden-section py-20 px-4 max-w-7xl mx-auto">
+            <h2 class="text-4xl font-black mb-12">The Collection</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="glass-card p-10 rounded-3xl">
+                    <h3 class="text-2xl font-black">Panda Activity Journal</h3>
+                    <p class="text-slate-500 mb-6">Puzzles, logic, and creative fun.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-black">$14.99</span>
+                        <button onclick="addToCart('Activity Journal', 14.99)" class="bg-slate-900 text-white px-8 py-3 rounded-xl">Add</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-admin" class="page-section hidden-section bg-slate-100 min-h-screen p-12">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-10">
+                    <h2 class="text-4xl font-black">Global Orders</h2>
+                    <button onclick="fetchOrders()" class="bg-white px-6 py-2 rounded-xl font-bold shadow-sm border border-slate-200"><i class="fas fa-sync-alt mr-2"></i>Refresh</button>
+                </div>
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 text-xs font-black text-slate-400 uppercase">
+                            <tr><th class="p-6">User</th><th class="p-6">Items</th><th class="p-6">Total</th><th class="p-6">Date</th></tr>
+                        </thead>
+                        <tbody id="order-list" class="divide-y divide-slate-100">
+                            <tr><td colspan="4" class="p-10 text-center">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 modal-overlay">
+        <div class="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl">
+            <h2 class="text-2xl font-black mb-6">Cart</h2>
+            <div id="cart-items" class="space-y-4 mb-6"></div>
+            <button id="checkout-btn" onclick="checkout()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black">Complete Purchase</button>
+            <button onclick="closeCart()" class="w-full mt-4 text-slate-400">Cancel</button>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-full shadow-2xl opacity-0 transition-all z-[120]"></div>
+
+    <script>
+        // CHANGE THIS TO YOUR RENDER URL ONCE DEPLOYED
+        const API_BASE = "https://your-app-name.onrender.com"; 
+
+        let isRegistering = false;
+        let authMode = 'user';
+        let currentUser = null;
+        let cart = [];
+
+        async function api(path, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (body) options.body = JSON.stringify(body);
+            const res = await fetch(`${API_BASE}${path}`, options);
+            return res.json();
+        }
+
+        function navigateTo(id) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.add('hidden-section'));
+            document.getElementById('page-' + id).classList.remove('hidden-section');
+        }
+
+        function openLoginModal(type) {
+            authMode = type;
+            isRegistering = false;
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('name-field').classList.add('hidden');
+            document.getElementById('modal-title').innerText = type === 'admin' ? 'Admin Login' : 'Sign In';
+            document.getElementById('auth-toggle').style.display = type === 'admin' ? 'none' : 'block';
+        }
+
+        function closeLoginModal() { document.getElementById('login-modal').classList.add('hidden'); }
+
+        function toggleAuthMode() {
+            isRegistering = !isRegistering;
+            document.getElementById('name-field').classList.toggle('hidden');
+            document.getElementById('modal-title').innerText = isRegistering ? 'Create Account' : 'Sign In';
+            document.getElementById('auth-submit-btn').innerText = isRegistering ? 'Register' : 'Sign In';
+        }
+
+        document.getElementById('auth-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const name = document.getElementById('auth-name').value;
+
+            try {
+                let res;
+                if (authMode === 'admin') {
+                    if (password === 'Admin@123') {
+                        res = { user: { name: email.split('@')[0], email, role: 'admin' } };
+                    } else { throw new Error("Incorrect Admin Password"); }
+                } else if (isRegistering) {
+                    res = await api('/register', 'POST', { email, password, name });
+                    alert("Registration successful! Please Sign In.");
+                    toggleAuthMode();
+                    return;
+                } else {
+                    res = await api('/login', 'POST', { email, password });
+                }
+
+                if (res.user) {
+                    currentUser = res.user;
+                    updateUI();
+                    closeLoginModal();
+                    showToast(`Welcome ${currentUser.name}`);
+                    if (currentUser.role === 'admin') {
+                        navigateTo('admin');
+                        fetchOrders();
+                    }
+                } else {
+                    alert(res.message || "Login failed");
+                }
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+
+        function updateUI() {
+            const loggedIn = !!currentUser;
+            document.getElementById('top-auth-state').classList.toggle('hidden', loggedIn);
+            document.getElementById('top-user-state').classList.toggle('hidden', !loggedIn);
+            if (loggedIn) document.getElementById('welcome-text').innerText = currentUser.name;
+            document.getElementById('dashboard-btn-container').classList.toggle('hidden', !loggedIn || currentUser.role !== 'admin');
+        }
+
+        function logout() { currentUser = null; updateUI(); navigateTo('home'); }
+
+        function addToCart(name, price) {
+            cart.push({name, price});
+            document.getElementById('cart-count').innerText = cart.length;
+            showToast("Added to Cart");
+        }
+
+        function openCart() {
+            const items = document.getElementById('cart-items');
+            items.innerHTML = cart.map(i => `<div class="flex justify-between border-b py-2"><span>${i.name}</span><b>$${i.price}</b></div>`).join('');
+            document.getElementById('cart-modal').classList.remove('hidden');
+        }
+
+        function closeCart() { document.getElementById('cart-modal').classList.add('hidden'); }
+
+        async function checkout() {
+            if (!currentUser) return openLoginModal('user');
+            const res = await api('/orders', 'POST', {
+                user: currentUser.email,
+                items: cart.map(i => i.name).join(', '),
+                total: cart.reduce((a,b) => a+b.price, 0)
+            });
+            showToast("Order Placed Successfully!");
+            cart = [];
+            document.getElementById('cart-count').innerText = 0;
+            closeCart();
+        }
+
+        async function fetchOrders() {
+            const orders = await api('/orders');
+            const list = document.getElementById('order-list');
+            list.innerHTML = orders.map(o => `
+                <tr>
+                    <td class="p-6 font-bold">${o.user}</td>
+                    <td class="p-6 text-slate-500">${o.items}</td>
+                    <td class="p-6 font-black text-emerald-600">$${o.total}</td>
+                    <td class="p-6 text-xs text-slate-400">${new Date(o.date).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.replace('opacity-0', 'opacity-100');
+            setTimeout(() => t.classList.replace('opacity-100', 'opacity-0'), 2000);
+        }
+    </script>
+</body>
+</html>
